@@ -1,3 +1,14 @@
+[![Crates.io][crates-badge]][crates-url]
+[![Apache-2.0 licensed][license-badge]][license-url]
+[![Build status][gh-actions-badge]][gh-actions-url]
+
+[crates-badge]: https://img.shields.io/crates/v/awaitility.svg
+[crates-url]: https://crates.io/crates/awaitility
+[license-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[license-url]: LICENSE
+[gh-actions-badge]: https://github.com/cuzfrog/awaitility/workflows/Test/badge.svg
+[gh-actions-url]: https://github.com/cuzfrog/awaitility/actions
+
 # Awaitility for Rust
 
 Fast, Simple, Straightforward Test utility for async functionalities with 0 dependencies.
