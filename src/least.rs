@@ -1,5 +1,4 @@
 use crate::config::Config;
-use crate::Configurable;
 use std::time::{Duration, Instant};
 
 pub struct LeastWait<'a> {
@@ -14,7 +13,24 @@ pub fn at_least(duration: Duration) -> LeastWait<'static> {
     }
 }
 
-impl LeastWait<'_> {
+pub fn at_least_config<'a>(duration: Duration, config: Config<'a>) -> LeastWait<'a> {
+    LeastWait {
+        duration,
+        config,
+    }
+}
+
+impl<'a> LeastWait<'a> {
+    pub fn poll_interval(&mut self, interval: Duration) -> &mut Self {
+        self.config.set_interval(interval);
+        self
+    }
+
+    pub fn describe<'b: 'a>(&mut self, desc: &'b str) -> &mut Self {
+        self.config.set_description(desc);
+        self
+    }
+
     pub fn always(&self, f: impl Fn() -> bool) {
         let now = Instant::now();
         loop {
@@ -29,17 +45,25 @@ impl LeastWait<'_> {
             std::thread::sleep(self.config.interval);
         }
     }
-}
 
-impl<'a> Configurable<'a> for LeastWait<'a> {
-    fn get_config(&mut self) -> &mut Config<'a> {
-        &mut self.config
+    pub fn once(&self, f: impl Fn() -> bool) {
+        let now = Instant::now();
+        loop {
+            let elapsed = now.elapsed();
+            if elapsed > self.duration {
+                let desc = format!("Condition failed before duration {:?} elapsed.", elapsed);
+                self.config.fail(&desc);
+            }
+            if f() {
+                break;
+            }
+            std::thread::sleep(self.config.interval);
+        }
     }
 }
 
 #[cfg(test)]
 mod least_test {
-    use crate::Configurable;
     use std::sync::atomic::{AtomicUsize, Ordering};
     use std::sync::Arc;
     use std::time::Duration;
@@ -54,9 +78,7 @@ mod least_test {
                 tcounter.fetch_add(1, Ordering::SeqCst);
             }
         });
-        super::at_least(Duration::from_millis(100))
-            .poll_interval(Duration::from_millis(45))
-            .always(|| counter.load(Ordering::SeqCst) < 10);
+        super::at_least(Duration::from_millis(100)).always(|| counter.load(Ordering::SeqCst) < 10);
     }
 
     #[test]
@@ -70,5 +92,17 @@ mod least_test {
             }
         });
         super::at_least(Duration::from_millis(100)).always(|| counter.load(Ordering::SeqCst) < 10);
+    }
+
+    #[test]
+    fn once_test() {
+        let counter = Arc::new(AtomicUsize::new(5));
+        let tcounter = counter.clone();
+        std::thread::spawn(move || {
+            while tcounter.load(Ordering::SeqCst) < 15 {
+                tcounter.fetch_add(1, Ordering::SeqCst);
+            }
+        });
+        super::at_least(Duration::from_millis(100)).once(|| counter.load(Ordering::SeqCst) < 10);
     }
 }

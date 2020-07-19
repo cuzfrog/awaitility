@@ -6,63 +6,30 @@
 [crates-url]: https://crates.io/crates/awaitility
 [license-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [license-url]: LICENSE
-[gh-actions-badge]: https://github.com/cuzfrog/awaitility/workflows/CI/badge.svg
+[gh-actions-badge]: https://github.com/cuzfrog/awaitility/workflows/Release-CI/badge.svg
 [gh-actions-url]: https://github.com/cuzfrog/awaitility/actions
 
 # Awaitility for Rust
 
-Fast, Simple, Straightforward Test utility for async functionalities with 0 dependencies.
+Fast, Simple, Straightforward Test utility for async functionalities.
 
 ## Getting Started
 
 ```toml
 [dev-dependencies]
-awaitility = "0.1"
+awaitility = "0.2"
 ```
+Awaitility itself has 0 dependencies.
 
-### Examples
+### Basic Usage
 
 ```rust
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
-
-#[test]
-fn at_most_test() {
-  let counter = Arc::new(AtomicUsize::new(5));
-  let tcounter = counter.clone();
-  std::thread::spawn(move || {
-    while tcounter.load(Ordering::SeqCst) < 15 {
-      tcounter.fetch_add(1, Ordering::SeqCst);
-    }
-  });
-  awaitility::at_most(Duration::from_millis(100)).until(|| counter.load(Ordering::SeqCst) > 10);
-}
-
-#[test]
-fn at_least_test() {
-  let counter = Arc::new(AtomicUsize::new(5));
-  let tcounter = counter.clone();
-  std::thread::spawn(move || {
-    std::thread::sleep(Duration::from_millis(150));
-    while tcounter.load(Ordering::SeqCst) < 15 {
-      tcounter.fetch_add(1, Ordering::SeqCst);
-    }
-  });
-  awaitility::at_least(Duration::from_millis(100)).always(|| counter.load(Ordering::SeqCst) < 10);
-}
+awaitility::at_most(Duration::from_millis(100)).until(|| {test something is true});
+awaitility::at_least(Duration::from_millis(100)).always(|| {test something is true);
+// ...
 ```
 
-### Config
-
-```rust
-use awaitility::Configurable;
-
-awaitility::at_most(Duration::from_millis(100))
-            .poll_interval(Duration::from_millis(45))
-            .describe("Becomes sunny..")
-            ...
-```
+See [RustDoc](https://docs.rs/awaitility) for more examples.
 
 ## Licence
 
