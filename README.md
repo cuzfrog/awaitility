@@ -1,10 +1,14 @@
 # Awaitility for Rust
 
-Simple, straightforward test utility for async functionalities.
+Fast, Simple, Straightforward Test utility for async functionalities.
 
 ### Examples
 
 ```rust
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::Arc;
+use std::time::Duration;
+
 #[test]
 fn at_most_test() {
   let counter = Arc::new(AtomicUsize::new(5));
@@ -29,6 +33,17 @@ fn at_least_test() {
   });
   awaitility::at_least(Duration::from_millis(100)).always(|| counter.load(Ordering::SeqCst) < 10);
 }
+```
+
+### Config
+
+```rust
+use awaitility::Configurable;
+
+awaitility::at_most(Duration::from_millis(100))
+            .poll_interval(Duration::from_millis(45))
+            .describe("Becomes sunny..")
+            ...
 ```
 
 ### Licence

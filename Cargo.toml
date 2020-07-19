@@ -1,9 +1,5 @@
 [package]
 name = "awaitility"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["cuzfrog <cuzfrog@gmail.com>"]
 edition = "2018"
-
-[dependencies]
-
-
