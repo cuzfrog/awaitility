@@ -1,46 +1,53 @@
-use crate::config::Config;
+use crate::error::Timeout;
+use super::backend::Backend;
 use std::time::{Duration, Instant};
 
 pub struct MostWait<'a> {
     duration: Duration,
-    config: Config<'a>,
+    backend: Backend<'a>,
 }
 
 pub fn at_most(duration: Duration) -> MostWait<'static> {
     MostWait {
         duration,
-        config: Config::default(),
+        backend: Backend::default(),
     }
 }
 
-pub fn at_most_config<'a>(duration: Duration, config: Config<'a>) -> MostWait<'a> {
+pub fn at_most_backend<'a>(duration: Duration, backend: Backend<'a>) -> MostWait<'a> {
     MostWait {
         duration,
-        config,
+        backend,
     }
 }
 
 impl<'a> MostWait<'a> {
     pub fn poll_interval(&mut self, interval: Duration) -> &mut Self {
-        self.config.set_interval(interval);
+        self.backend.set_interval(interval);
         self
     }
 
     pub fn describe<'b: 'a>(&mut self, desc: &'b str) -> &mut Self {
-        self.config.set_description(desc);
+        self.backend.set_description(desc);
         self
     }
 
-    pub fn until(&self, f: impl Fn() -> bool) {
+    pub fn result(&self) -> Result<(), Timeout> {
+        self.backend.result.clone()
+    }
+
+    pub fn until(&mut self, f: impl Fn() -> bool) -> &Self {
         let now = Instant::now();
         while !f() {
             let elapsed = now.elapsed();
             if elapsed > self.duration {
                 let desc = format!("Condition not satisfied after {:?}.", elapsed);
-                self.config.fail(&desc);
+                self.backend.fail(&desc);
+                break;
             }
-            std::thread::sleep(self.config.interval);
+            std::thread::sleep(self.backend.interval);
         }
+        self
     }
 }
 

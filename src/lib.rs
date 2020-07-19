@@ -42,10 +42,11 @@
 //! aw.at_least(Duration::from_millis(10)).always(|| 2 > 1);
 //! aw.at_least(Duration::from_millis(10)).once(|| 2 > 1);
 //! ```
-//! Further configs made after `at_most` will not be reflected on instance `aw`.
+//! Further configs made after `at_least` will not be reflected on instance `aw`.
 
 mod awaitility;
-mod config;
+mod backend;
+mod error;
 mod least;
 mod most;
 
@@ -68,3 +69,4 @@ pub fn at_least(duration: Duration) -> least::LeastWait<'static> {
 pub fn new() -> awaitility::Awaitility<'static> {
     awaitility::new()
 }
+
