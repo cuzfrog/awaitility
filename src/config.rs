@@ -1,14 +1,15 @@
 use std::time::Duration;
 
-static DEFAULT_INTERVAL: Duration = Duration::from_millis(50);
+const DEFAULT_INTERVAL: Duration = Duration::from_millis(50);
 
+#[derive(Clone)]
 pub struct Config<'a> {
     pub interval: Duration,
     description: Option<&'a str>,
 }
 
 impl<'a> Config<'a> {
-    pub fn default() -> Config<'static> {
+    pub const fn default() -> Config<'static> {
         Config {
             interval: DEFAULT_INTERVAL,
             description: None,
