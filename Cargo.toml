@@ -1,5 +1,12 @@
 [package]
 name = "awaitility"
+description = "Awaitility for Rust"
 version = "0.1.1"
-authors = ["cuzfrog <cuzfrog@gmail.com>"]
+authors = ["Cause Chung <cuzfrog@gmail.com>"]
+homepage = "https://github.com/cuzfrog/awaitility"
+repository = "https://github.com/cuzfrog/awaitility"
+readme = "README.md"
+license = "Apache-2.0"
+keywords = ["awaitility", "async", "test"]
+categories = ["development-tools::testing"]
 edition = "2018"

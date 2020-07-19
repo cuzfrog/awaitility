@@ -1,6 +1,13 @@
 # Awaitility for Rust
 
-Fast, Simple, Straightforward Test utility for async functionalities.
+Fast, Simple, Straightforward Test utility for async functionalities with 0 dependencies.
+
+## Getting Started
+
+```toml
+[dev-dependencies]
+awaitility = "0.1"
+```
 
 ### Examples
 
@@ -46,10 +53,10 @@ awaitility::at_most(Duration::from_millis(100))
             ...
 ```
 
-### Licence
+## Licence
 
 Apache License 2.0
 
-### Author
+## Author
 
 Cause Chung (cuzfrog@gmail.com, cuzfrog@139.com)
