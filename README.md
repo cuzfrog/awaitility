@@ -6,7 +6,7 @@
 [crates-url]: https://crates.io/crates/awaitility
 [license-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [license-url]: LICENSE
-[gh-actions-badge]: https://github.com/cuzfrog/awaitility/workflows/Test/badge.svg
+[gh-actions-badge]: https://github.com/cuzfrog/awaitility/workflows/CI/badge.svg
 [gh-actions-url]: https://github.com/cuzfrog/awaitility/actions
 
 # Awaitility for Rust
