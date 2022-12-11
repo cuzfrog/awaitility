@@ -17,7 +17,7 @@ Fast, Simple, Straightforward Test utility for async functionalities.
 
 ```toml
 [dev-dependencies]
-awaitility = "0.2"
+awaitility = "0.3"
 ```
 Awaitility itself has 0 dependencies.
 
