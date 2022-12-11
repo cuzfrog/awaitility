@@ -1,37 +1,37 @@
-use crate::config::Config;
+use super::backend::Backend;
 use std::time::{Duration, Instant};
 
 pub struct LeastWait<'a> {
     duration: Duration,
-    config: Config<'a>,
+    backend: Backend<'a>,
 }
 
 pub fn at_least(duration: Duration) -> LeastWait<'static> {
     LeastWait {
         duration,
-        config: Config::default(),
+        backend: Backend::default(),
     }
 }
 
-pub fn at_least_config<'a>(duration: Duration, config: Config<'a>) -> LeastWait<'a> {
+pub fn at_least_backend<'a>(duration: Duration, backend: Backend<'a>) -> LeastWait<'a> {
     LeastWait {
         duration,
-        config,
+        backend,
     }
 }
 
 impl<'a> LeastWait<'a> {
     pub fn poll_interval(&mut self, interval: Duration) -> &mut Self {
-        self.config.set_interval(interval);
+        self.backend.set_interval(interval);
         self
     }
 
     pub fn describe<'b: 'a>(&mut self, desc: &'b str) -> &mut Self {
-        self.config.set_description(desc);
+        self.backend.set_description(desc);
         self
     }
 
-    pub fn always(&self, f: impl Fn() -> bool) {
+    pub fn always(&mut self, f: impl Fn() -> bool) -> &Self {
         let now = Instant::now();
         loop {
             let elapsed = now.elapsed();
@@ -40,25 +40,29 @@ impl<'a> LeastWait<'a> {
             }
             if !f() {
                 let desc = format!("Condition failed before duration {:?} elapsed.", elapsed);
-                self.config.fail(&desc);
+                self.backend.fail(&desc);
+                break;
             }
-            std::thread::sleep(self.config.interval);
+            std::thread::sleep(self.backend.interval);
         }
+        self
     }
 
-    pub fn once(&self, f: impl Fn() -> bool) {
+    pub fn once(&mut self, f: impl Fn() -> bool) -> &Self {
         let now = Instant::now();
         loop {
             let elapsed = now.elapsed();
             if elapsed > self.duration {
                 let desc = format!("Condition failed before duration {:?} elapsed.", elapsed);
-                self.config.fail(&desc);
+                self.backend.fail(&desc);
+                break;
             }
             if f() {
                 break;
             }
-            std::thread::sleep(self.config.interval);
+            std::thread::sleep(self.backend.interval);
         }
+        self
     }
 }
 
