@@ -15,7 +15,7 @@ impl Timeout {
 impl Error for Timeout {}
 
 impl Display for Timeout {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         write!(f, "TimeoutError: {}", self.msg)
     }
 }

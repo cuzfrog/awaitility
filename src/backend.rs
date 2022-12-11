@@ -57,6 +57,6 @@ mod backend_test {
     #[should_panic]
     fn fail_test() {
         let mut backend = Backend::default();
-        backend.fail("");
+        backend.fail("failed,");
     }
 }

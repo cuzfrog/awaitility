@@ -25,6 +25,12 @@
 //!  awaitility::at_most(Duration::from_millis(100)).until(|| counter.load(Ordering::SeqCst) > 10);
 //! }
 //! ```
+//! ### Return result
+//! ```rust
+//! # use std::time::Duration;
+//! let res = awaitility::new().set_return().at_most(Duration::from_millis(10)).until(|| 1 > 2).result();
+//! assert!(res.is_err());
+//! ```
 //! ## Config
 //! ```rust
 //! # use std::time::Duration;
@@ -34,7 +40,7 @@
 //!            .until(|| 2 > 1);
 //! ```
 //! 
-//! ## Share configured instance
+//! ### Share configured instance
 //! ```rust
 //! use std::time::Duration;
 //! 

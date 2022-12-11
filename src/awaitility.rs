@@ -52,7 +52,7 @@ mod awaitility_test {
 
     #[test]
     fn set_return_test() {
-        let res = super::new().set_return().at_most(Duration::from_millis(10)).until(|| 1 > 2).result();
-        assert!(res.is_err());
+        let res = super::new().set_return().at_most(Duration::from_millis(10)).until(|| 3 > 2).result();
+        assert!(res.is_ok());
     }
 }
