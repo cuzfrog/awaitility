@@ -1,7 +1,7 @@
 [package]
 name = "awaitility"
 description = "Awaitility for Rust"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Cause Chung <cuzfrog@gmail.com>"]
 homepage = "https://github.com/cuzfrog/awaitility"
 repository = "https://github.com/cuzfrog/awaitility"
