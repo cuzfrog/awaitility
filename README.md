@@ -1,6 +1,5 @@
 [![Crates.io][crates-badge]][crates-url]
 [![Apache-2.0 licensed][license-badge]][license-url]
-[![Build status][gh-actions-badge]][gh-actions-url]
 
 [crates-badge]: https://img.shields.io/crates/v/awaitility.svg
 [crates-url]: https://crates.io/crates/awaitility
@@ -17,9 +16,9 @@ Fast, Simple, Straightforward Test utility for async functionalities.
 
 ```toml
 [dev-dependencies]
-awaitility = "0.3"
+awaitility = "0.4"
 ```
-Awaitility itself has 0 dependencies.
+Awaitility has dev-dependencies of tokio used for its own async fn testing.
 
 ### Basic Usage
 
