@@ -123,20 +123,26 @@ mod most_test {
         super::at_most(Duration::from_millis(30)).until(|| 1 > 2);
     }
 
-    async fn async_sum(a: i8, b: i8) -> i8 {
-        a + b
-    }
-
     #[tokio::test]
     async fn at_most_async_fn() {
-        super::at_most(Duration::from_millis(30)).until_async(|| async {
-            async_sum(1, 2).await == 3
+        let counter = Arc::new(AtomicUsize::new(5));
+        let tcounter = counter.clone();
+        std::thread::spawn(move || {
+            while tcounter.load(Ordering::SeqCst) < 15 {
+                tcounter.fetch_add(1, Ordering::SeqCst);
+            }
+        });
+        super::at_most(Duration::from_millis(1000)).until_async(|| async {
+            counter.load(Ordering::SeqCst) > 10
         }).await;
     }
 
     #[tokio::test]
     #[should_panic]
     async fn at_most_async_panic() {
+        async fn async_sum(a: i8, b: i8) -> i8 {
+            a + b
+        }
         super::at_most(Duration::from_millis(30)).until_async(|| async {
             async_sum(1, 2).await == 4
         }).await;
