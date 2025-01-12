@@ -26,7 +26,12 @@ Awaitility itself has 0 dependencies.
 ```rust
 awaitility::at_most(Duration::from_millis(100)).until(|| {test something is true});
 awaitility::at_least(Duration::from_millis(100)).always(|| {test something is true});
-awaitility::at_least(Duration::from_millis(100)).until_no_panic(|| {assert_eq!(1, 1)});
+awaitility::at_most(Duration::from_millis(100)).until_no_panic(|| {assert_eq!(1, 1)});
+
+#[tokio::test]
+async fn test() {
+  awaitility::at_most(Duration::from_millis(100)).until_async(|| async {test something is true}).await;
+}
 // ...
 ```
 
