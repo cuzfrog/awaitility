@@ -6,7 +6,7 @@
 //! # fn test_something_is_true() -> bool { true }
 //! awaitility::at_most(Duration::from_millis(100)).until(|| {test_something_is_true()});
 //! awaitility::at_least(Duration::from_millis(50)).always(|| {test_something_is_true()});
-//! awaitility::at_least(Duration::from_millis(100)).until_no_panic(|| {assert_eq!(1, 1)});
+//! awaitility::at_most(Duration::from_millis(100)).until_no_panic(|| {assert_eq!(1, 1)});
 //! // ...
 //! ```
 //! ## Examples
@@ -26,6 +26,16 @@
 //!  awaitility::at_most(Duration::from_millis(100)).until(|| counter.load(Ordering::SeqCst) > 10);
 //! }
 //! ```
+//! ### Async function
+//! ```rust
+//! #[tokio::test]
+//! async fn always_async_test() {
+//!    super::at_least(Duration::from_millis(100)).always_async(|| async {
+//!        1 < 2
+//!    }).await;    
+//! }
+//! ```
+//! 
 //! ### Return result
 //! ```rust
 //! # use std::time::Duration;
