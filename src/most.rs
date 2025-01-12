@@ -1,5 +1,6 @@
 use crate::error::Timeout;
 use super::backend::Backend;
+use std::future::Future;
 use std::time::{Duration, Instant};
 use std::panic::{AssertUnwindSafe, self};
 
@@ -40,22 +41,26 @@ impl<'a> MostWait<'a> {
     pub fn until(&mut self, f: impl Fn() -> bool) -> &Self {
         let now = Instant::now();
         while !f() {
-            let elapsed = now.elapsed();
-            if elapsed > self.duration {
-                let desc = format!("Condition not satisfied after {:?}.", elapsed);
-                self.backend.fail(&desc);
+            if self.is_timeout_or_wait(&now) {
                 break;
             }
-            std::thread::sleep(self.backend.interval);
+        }
+        self
+    }
+
+    pub async fn until_async<Fut>(&mut self, f: impl Fn() -> Fut) -> &Self where Fut: Future<Output = bool> {
+        let now = Instant::now();
+        while !f().await {
+            if self.is_timeout_or_wait(&now) {
+                break;
+            }
         }
         self
     }
 
     pub fn until_no_panic(&mut self, f: impl Fn()) -> &Self {
         let now = Instant::now();
-        let mut result = panic::catch_unwind(AssertUnwindSafe(|| f()));
-        while result.is_err() {
-            result = panic::catch_unwind(AssertUnwindSafe(|| f()));
+        while panic::catch_unwind(AssertUnwindSafe(|| f())).is_err() {
             let elapsed = now.elapsed();
             if elapsed > self.duration {
                 f();
@@ -64,6 +69,17 @@ impl<'a> MostWait<'a> {
             std::thread::sleep(self.backend.interval);
         }
         self
+    }
+
+    fn is_timeout_or_wait(&mut self, now: &Instant) -> bool {
+        let elapsed = now.elapsed();
+        if elapsed > self.duration {
+            let desc = format!("Condition not satisfied after {:?}.", elapsed);
+            self.backend.fail(&desc);
+            return true;
+        }
+        std::thread::sleep(self.backend.interval);
+        return false;
     }
 }
 
@@ -105,5 +121,24 @@ mod most_test {
     #[should_panic]
     fn at_most_panic() {
         super::at_most(Duration::from_millis(30)).until(|| 1 > 2);
+    }
+
+    async fn async_sum(a: i8, b: i8) -> i8 {
+        a + b
+    }
+
+    #[tokio::test]
+    async fn at_most_async_fn() {
+        super::at_most(Duration::from_millis(30)).until_async(|| async {
+            async_sum(1, 2).await == 3
+        }).await;
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn at_most_async_panic() {
+        super::at_most(Duration::from_millis(30)).until_async(|| async {
+            async_sum(1, 2).await == 4
+        }).await;
     }
 }
